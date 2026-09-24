@@ -3999,8 +3999,9 @@ Components.TitleBar = (function()
 
 		local PrimeLabel = New("Frame", {
 			Name = "BrandLogo",
-			Position = UDim2.fromOffset(9, 1),
-			Size = UDim2.fromOffset(28, 28),
+			Position = UDim2.fromOffset(8, 3),
+			Size = UDim2.fromOffset(23, 23),
+			ClipsDescendants = true,
 			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 		})
@@ -4107,12 +4108,6 @@ Components.TitleBar = (function()
 			New("UICorner", { CornerRadius = UDim.new(0, MAIN_GUI_CORNER_RADIUS) }),
 			PrimeLabel,
 			TierLabel,
-			New("Frame", {
-				Size = UDim2.new(1, 0, 0, 1),
-				Position = UDim2.new(0, 0, 1, -1),
-				BorderSizePixel = 0,
-				ThemeTag = { BackgroundColor3 = "TitleBarLine" },
-			}),
 		})
 
 		local tierShimmer = TweenService:Create(TierGradient,
