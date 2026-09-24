@@ -1,5 +1,3 @@
-
-
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local Lighting = game:GetService("Lighting")
@@ -13,11 +11,6 @@ local Mouse = (LocalPlayer and LocalPlayer.GetMouse and LocalPlayer:GetMouse()) 
 local httpService = game:GetService("HttpService")
 
 local Mobile = not RunService:IsStudio() and table.find({Enum.Platform.IOS, Enum.Platform.Android}, UserInputService:GetPlatform()) ~= nil
-
-local fischbypass
-if game.GameId == 5750914919 then
-	fischbypass = true
-end
 
 local function enforceFont(root)
 	if not root then return end
@@ -744,39 +737,39 @@ local Themes = {
 	Slate = {
 		Name = "Slate",
 		Accent = Color3.fromRGB(255, 255, 255),
-		AcrylicMain = Color3.fromRGB(8, 8, 8),
-		AcrylicBorder = Color3.fromRGB(62, 62, 62),
-		AcrylicGradient = ColorSequence.new(Color3.fromRGB(6, 6, 6), Color3.fromRGB(13, 13, 13)),
+		AcrylicMain = Color3.fromRGB(0, 0, 0),
+		AcrylicBorder = Color3.fromRGB(255, 255, 255),
+		AcrylicGradient = ColorSequence.new(Color3.new(0, 0, 0)),
 		AcrylicNoise = 1,
-		TitleBarLine = Color3.fromRGB(48, 48, 48),
-		Tab = Color3.fromRGB(18, 18, 18),
-		Element = Color3.fromRGB(20, 20, 20),
-		ElementBorder = Color3.fromRGB(52, 52, 52),
-		InElementBorder = Color3.fromRGB(64, 64, 64),
+		TitleBarLine = Color3.fromRGB(255, 255, 255),
+		Tab = Color3.fromRGB(0, 0, 0),
+		Element = Color3.fromRGB(0, 0, 0),
+		ElementBorder = Color3.fromRGB(255, 255, 255),
+		InElementBorder = Color3.fromRGB(255, 255, 255),
 		ElementTransparency = 1,
-		ToggleSlider = Color3.fromRGB(28, 28, 28),
+		ToggleSlider = Color3.fromRGB(0, 0, 0),
 		ToggleToggled = Color3.fromRGB(255, 255, 255),
-		SliderRail = Color3.fromRGB(58, 58, 58),
-		DropdownFrame = Color3.fromRGB(18, 18, 18),
-		DropdownHolder = Color3.fromRGB(10, 10, 10),
-		DropdownBorder = Color3.fromRGB(62, 62, 62),
-		DropdownOption = Color3.fromRGB(22, 22, 22),
-		Keybind = Color3.fromRGB(20, 20, 20),
-		Input = Color3.fromRGB(18, 18, 18),
-		InputFocused = Color3.fromRGB(8, 8, 8),
-		InputIndicator = Color3.fromRGB(105, 105, 105),
+		SliderRail = Color3.fromRGB(255, 255, 255),
+		DropdownFrame = Color3.fromRGB(0, 0, 0),
+		DropdownHolder = Color3.fromRGB(0, 0, 0),
+		DropdownBorder = Color3.fromRGB(255, 255, 255),
+		DropdownOption = Color3.fromRGB(0, 0, 0),
+		Keybind = Color3.fromRGB(0, 0, 0),
+		Input = Color3.fromRGB(0, 0, 0),
+		InputFocused = Color3.fromRGB(0, 0, 0),
+		InputIndicator = Color3.fromRGB(255, 255, 255),
 		InputIndicatorFocus = Color3.fromRGB(255, 255, 255),
-		Dialog = Color3.fromRGB(10, 10, 10),
-		DialogHolder = Color3.fromRGB(13, 13, 13),
-		DialogHolderLine = Color3.fromRGB(48, 48, 48),
-		DialogButton = Color3.fromRGB(20, 20, 20),
-		DialogButtonBorder = Color3.fromRGB(65, 65, 65),
-		DialogBorder = Color3.fromRGB(70, 70, 70),
-		DialogInput = Color3.fromRGB(15, 15, 15),
-		DialogInputLine = Color3.fromRGB(90, 90, 90),
-		Text = Color3.fromRGB(245, 245, 245),
-		SubText = Color3.fromRGB(150, 150, 150),
-		Hover = Color3.fromRGB(32, 32, 32),
+		Dialog = Color3.fromRGB(0, 0, 0),
+		DialogHolder = Color3.fromRGB(0, 0, 0),
+		DialogHolderLine = Color3.fromRGB(255, 255, 255),
+		DialogButton = Color3.fromRGB(0, 0, 0),
+		DialogButtonBorder = Color3.fromRGB(255, 255, 255),
+		DialogBorder = Color3.fromRGB(255, 255, 255),
+		DialogInput = Color3.fromRGB(0, 0, 0),
+		DialogInputLine = Color3.fromRGB(255, 255, 255),
+		Text = Color3.fromRGB(255, 255, 255),
+		SubText = Color3.fromRGB(255, 255, 255),
+		Hover = Color3.fromRGB(0, 0, 0),
 		HoverChange = 0.06,
 	},
 	Gray = {
@@ -4009,7 +4002,7 @@ Components.TitleBar = (function()
 				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)),
 				ColorSequenceKeypoint.new(0.22, Color3.fromRGB(128, 128, 128)),
 				ColorSequenceKeypoint.new(0.46, Color3.fromRGB(255, 255, 255)),
-				ColorSequenceKeypoint.new(0.72, Color3.fromRGB(92, 92, 92)),
+				ColorSequenceKeypoint.new(0.72, Color3.fromRGB(255, 255, 255)),
 				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255)),
 			}),
 			Offset = Vector2.new(-1, 0),
@@ -4053,11 +4046,11 @@ Components.TitleBar = (function()
 				ColorSequenceKeypoint.new(0.65, Color3.fromRGB(190, 145, 40)),
 				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 215, 90)),
 			}) or ColorSequence.new({
-				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(45, 150, 75)),
-				ColorSequenceKeypoint.new(0.35, Color3.fromRGB(8, 55, 22)),
-				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(45, 150, 75)),
-				ColorSequenceKeypoint.new(0.65, Color3.fromRGB(8, 55, 22)),
-				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(45, 150, 75)),
+				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)),
+				ColorSequenceKeypoint.new(0.35, Color3.fromRGB(195, 195, 195)),
+				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
+				ColorSequenceKeypoint.new(0.65, Color3.fromRGB(195, 195, 195)),
+				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255)),
 			}),
 			Offset = Vector2.new(-1, 0),
 			Rotation = 0,
@@ -4188,7 +4181,7 @@ Components.Window = (function()
 			Parent = Config.Parent,
 			ZIndex = 100,
 			ClipsDescendants = true,
-			BackgroundTransparency = 0.05,
+			BackgroundTransparency = 0,
 			ThemeTag = { BackgroundColor3 = "AcrylicMain" },
 		}, rootChildren)
 
@@ -4278,18 +4271,18 @@ Components.Window = (function()
 		})
 		local Avatar = New("ViewportFrame", {
 			Name = "Avatar",
-			Ambient = Color3.fromRGB(210, 210, 210),
+			Ambient = Color3.fromRGB(160, 160, 160),
 			LightColor = Color3.new(1, 1, 1),
-			LightDirection = Vector3.new(-1, -1, -1),
-			Size = UDim2.fromOffset(32, 32),
-			Position = UDim2.fromOffset(3, 3),
+			LightDirection = Vector3.new(-0.3, -0.5, 1),
+			Size = UDim2.fromOffset(36, 36),
+			Position = UDim2.fromOffset(2, 1),
 			BackgroundTransparency = 0.15,
 			Parent = Profile,
 			ZIndex = 142,
 			ThemeTag = {BackgroundColor3 = "Element"},
 		}, {
 			New("UICorner", {CornerRadius = UDim.new(1, 0)}),
-			New("UIStroke", {Thickness = 1, Transparency = 0.35, ThemeTag = {Color = "ElementBorder"}}),
+			New("UIStroke", {Thickness = 1, Transparency = 0, ThemeTag = {Color = "ElementBorder"}}),
 		})
 		local DisplayName = New("TextLabel", {
 			Name = "DisplayName",
@@ -4339,7 +4332,7 @@ Components.Window = (function()
 					if not character then return end
 					local head = character:FindFirstChild("Head") or character:WaitForChild("Head", 10)
 					if not head or not head:IsA("BasePart") or not Avatar.Parent or token ~= generation then return end
-					local model = Instance.new("Model")
+					local model = Instance.new("WorldModel")
 					local function CopyPart(part)
 						local archivable = part.Archivable
 						part.Archivable = true
@@ -4369,7 +4362,7 @@ Components.Window = (function()
 							end
 						end
 					end
-					local distance = math.max(head.Size.X, head.Size.Y, head.Size.Z) * 2.8
+					local distance = math.max(head.Size.X, head.Size.Y, head.Size.Z) * 1.9
 					camera.CFrame = CFrame.lookAt(Vector3.new(0, 0.15, -distance), Vector3.new(0, 0.15, 0))
 					model.Parent = Avatar
 					if portrait then portrait:Destroy() end
@@ -4379,6 +4372,27 @@ Components.Window = (function()
 			Creator.AddSignal(LocalPlayer.CharacterAdded, RefreshAvatar)
 			Creator.AddSignal(LocalPlayer.CharacterAppearanceLoaded, RefreshAvatar)
 			RefreshAvatar(LocalPlayer.Character)
+			local photo = New("ImageLabel", {
+				Name = "Headshot",
+				Size = UDim2.fromScale(1, 1),
+				BackgroundColor3 = Color3.new(0, 0, 0),
+				BackgroundTransparency = 0,
+				Image = "rbxthumb://type=AvatarHeadShot&id=" .. LocalPlayer.UserId .. "&w=420&h=420",
+				ImageColor3 = Color3.new(1, 1, 1),
+				ScaleType = Enum.ScaleType.Fit,
+				Visible = false,
+				Parent = Avatar,
+				ZIndex = 143,
+			}, {New("UICorner", {CornerRadius = UDim.new(1, 0)})})
+			local function ShowPhoto()
+				photo.Visible = photo.IsLoaded
+			end
+			Creator.AddSignal(photo:GetPropertyChangedSignal("IsLoaded"), ShowPhoto)
+			ShowPhoto()
+			task.spawn(function()
+				pcall(function() game:GetService("ContentProvider"):PreloadAsync({photo}) end)
+				if photo.Parent then ShowPhoto() end
+			end)
 		end
 
 		local function FooterButton(name, iconName, xOffset, callback)
@@ -4689,7 +4703,7 @@ ElementsTable.Toggle = (function()
 			Name = "Stroke",
 			Thickness = 1,
 			Transparency = 0.08,
-			Color = Color3.fromRGB(92, 92, 92),
+			Color = Color3.fromRGB(255, 255, 255),
 		})
 
 		local Box = New("Frame", {
@@ -4721,7 +4735,7 @@ ElementsTable.Toggle = (function()
 		local function Update(animated)
 			local enabled = Toggle.Value
 			local activeColor = Color3.fromRGB(246, 246, 246)
-			local inactiveColor = Color3.fromRGB(18, 18, 18)
+			local inactiveColor = Color3.fromRGB(0, 0, 0)
 			local boxTransparency = Toggle.Disabled and (enabled and 0.32 or 0.2) or 0
 			local targetCheckSize = enabled and UDim2.fromOffset(10, 10) or UDim2.fromOffset(5, 5)
 			local targetCheckTransparency = enabled and (Toggle.Disabled and 0.35 or 0) or 1
@@ -4737,7 +4751,7 @@ ElementsTable.Toggle = (function()
 					ImageTransparency = targetCheckTransparency,
 				}):Play()
 				TweenService:Create(Stroke, TweenInfo.new(0.14), {
-					Color = enabled and Color3.fromRGB(235, 235, 235) or Color3.fromRGB(92, 92, 92),
+					Color = enabled and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(255, 255, 255),
 					Transparency = Toggle.Disabled and 0.48 or 0.08,
 				}):Play()
 			else
@@ -4745,7 +4759,7 @@ ElementsTable.Toggle = (function()
 				Box.BackgroundTransparency = boxTransparency
 				Check.Size = targetCheckSize
 				Check.ImageTransparency = targetCheckTransparency
-				Stroke.Color = enabled and Color3.fromRGB(235, 235, 235) or Color3.fromRGB(92, 92, 92)
+				Stroke.Color = enabled and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(255, 255, 255)
 				Stroke.Transparency = Toggle.Disabled and 0.48 or 0.08
 			end
 
@@ -9580,11 +9594,11 @@ end
 function Library:ToggleTransparency(Value)
 	Library.Transparency = Value == true
 	if Library.Window and Library.Window.Root then
-		Library.Window.Root.BackgroundTransparency = Value and 0.08 or 0
+		Library.Window.Root.BackgroundTransparency = 0
 	end
 	pcall(function()
 		if Library.Window and Library.Window.AcrylicPaint and Library.Window.AcrylicPaint.Frame and Library.Window.AcrylicPaint.Frame:FindFirstChild("Background") then
-			Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = Value and 0.1 or 0
+			Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = 0
 		end
 	end)
 end
@@ -9653,7 +9667,7 @@ function Library:SetWindowTransparency(Value)
 			end
 
 
-			Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = math.min(backgroundTransparency, 0.99)
+			Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = 0
 
 
 
@@ -9686,7 +9700,7 @@ function Library:SetWindowTransparency(Value)
 			Library.Window.AcrylicPaint:SetModelTransparency(0.98)
 
 
-			Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = Value * 0.3
+			Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = 0
 		end
 
 
