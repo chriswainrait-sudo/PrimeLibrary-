@@ -4272,19 +4272,18 @@ Components.Window = (function()
 			Size = UDim2.new(1, -82, 0, 38),
 			Position = UDim2.fromOffset(10, 5),
 			BackgroundTransparency = 1,
-			ClipsDescendants = true,
+			ClipsDescendants = false,
 			Parent = Footer,
 			ZIndex = 141,
 		})
-		local Avatar = New("ImageLabel", {
+		local Avatar = New("ViewportFrame", {
 			Name = "Avatar",
+			Ambient = Color3.fromRGB(210, 210, 210),
+			LightColor = Color3.new(1, 1, 1),
+			LightDirection = Vector3.new(-1, -1, -1),
 			Size = UDim2.fromOffset(32, 32),
-			Position = UDim2.fromOffset(0, 3),
+			Position = UDim2.fromOffset(3, 3),
 			BackgroundTransparency = 0.15,
-			Image = LocalPlayer and ("rbxthumb://type=AvatarHeadShot&id=" .. LocalPlayer.UserId .. "&w=150&h=150") or "",
-			ImageColor3 = Color3.new(1, 1, 1),
-			ImageTransparency = 0,
-			ScaleType = Enum.ScaleType.Crop,
 			Parent = Profile,
 			ZIndex = 142,
 			ThemeTag = {BackgroundColor3 = "Element"},
@@ -4327,18 +4326,59 @@ Components.Window = (function()
 			Creator.AddSignal(LocalPlayer:GetPropertyChangedSignal("DisplayName"), function()
 				if Profile.Parent then DisplayName.Text = LocalPlayer.DisplayName end
 			end)
-			task.spawn(function()
-				for attempt = 1, 5 do
-					if not Profile.Parent then return end
-					if Avatar.IsLoaded then return end
-					local ok, image, ready = pcall(Players.GetUserThumbnailAsync, Players, LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
-					if not Profile.Parent then return end
-					if ok and ready and type(image) == "string" and image ~= "" then
-						Avatar.Image = image
+			local camera = Instance.new("Camera")
+			camera.FieldOfView = 35
+			camera.Parent = Avatar
+			Avatar.CurrentCamera = camera
+			local generation = 0
+			local portrait
+			local function RefreshAvatar(character)
+				generation += 1
+				local token = generation
+				task.spawn(function()
+					if not character then return end
+					local head = character:FindFirstChild("Head") or character:WaitForChild("Head", 10)
+					if not head or not head:IsA("BasePart") or not Avatar.Parent or token ~= generation then return end
+					local model = Instance.new("Model")
+					local function CopyPart(part)
+						local archivable = part.Archivable
+						part.Archivable = true
+						local ok, copy = pcall(part.Clone, part)
+						part.Archivable = archivable
+						if not ok or not copy then return end
+						for _, item in ipairs(copy:GetDescendants()) do
+							if item:IsA("LuaSourceContainer") or item:IsA("JointInstance") or item:IsA("Constraint") then item:Destroy() end
+						end
+						copy.Anchored = true
+						copy.CanCollide = false
+						copy.LocalTransparencyModifier = 0
+						copy.CFrame = head.CFrame:ToObjectSpace(part.CFrame)
+						copy.Parent = model
 					end
-					if attempt < 5 then task.wait(attempt) end
-				end
-			end)
+					CopyPart(head)
+					for _, accessory in ipairs(character:GetChildren()) do
+						if accessory:IsA("Accessory") then
+							local handle = accessory:FindFirstChild("Handle")
+							if handle and handle:IsA("BasePart") then
+								for _, attachment in ipairs(handle:GetChildren()) do
+									if attachment:IsA("Attachment") and head:FindFirstChild(attachment.Name) then
+										CopyPart(handle)
+										break
+									end
+								end
+							end
+						end
+					end
+					local distance = math.max(head.Size.X, head.Size.Y, head.Size.Z) * 2.8
+					camera.CFrame = CFrame.lookAt(Vector3.new(0, 0.15, -distance), Vector3.new(0, 0.15, 0))
+					model.Parent = Avatar
+					if portrait then portrait:Destroy() end
+					portrait = model
+				end)
+			end
+			Creator.AddSignal(LocalPlayer.CharacterAdded, RefreshAvatar)
+			Creator.AddSignal(LocalPlayer.CharacterAppearanceLoaded, RefreshAvatar)
+			RefreshAvatar(LocalPlayer.Character)
 		end
 
 		local function FooterButton(name, iconName, xOffset, callback)
@@ -4506,14 +4546,12 @@ Components.Window = (function()
 		function Window:Minimize()
 			Window.Minimized = not Window.Minimized
 			Window.Root.Visible = not Window.Minimized
-			InterfaceManager:UpdateCursorUnlock()
 			for _, option in next, Library.Options do
 				if option and option.Type == "Dropdown" and option.Opened and option.Close then pcall(function() option:Close() end) end
 			end
 		end
 
 		function Window:Destroy()
-			InterfaceManager:DisableCursorUnlock()
 			if Window.AcrylicPaint and Window.AcrylicPaint.Model then pcall(function() Window.AcrylicPaint.Model:Destroy() end) end
 			Window.Root:Destroy()
 		end
@@ -8507,123 +8545,11 @@ local InterfaceManager = {} do
 		MenuKeybind = "M",
 
 
-		AutoCursorUnlock = false,
 
 
 
 
 	}
-
-
-	InterfaceManager.CursorConnection = nil
-	InterfaceManager.TeamConnection = nil
-	InterfaceManager.CursorState = nil
-
-
-	function InterfaceManager:IsSurvivor()
-		local team = LocalPlayer and LocalPlayer.Team
-		return team ~= nil and string.lower(team.Name) == "survivor"
-	end
-
-
-	function InterfaceManager:CaptureCursorState()
-		if self.CursorState then
-			return
-		end
-
-		self.CursorState = {
-			MouseBehavior = UserInputService.MouseBehavior,
-			MouseIconEnabled = UserInputService.MouseIconEnabled,
-		}
-	end
-
-
-	function InterfaceManager:RestoreCursorState()
-		local state = self.CursorState
-		self.CursorState = nil
-		if not state then
-			return
-		end
-
-		pcall(function()
-			UserInputService.MouseBehavior = state.MouseBehavior
-			UserInputService.MouseIconEnabled = state.MouseIconEnabled
-		end)
-	end
-
-
-	function InterfaceManager:UpdateCursorUnlock()
-		local window = self.Library and self.Library.Window
-		local root = window and window.Root
-		local cursorUnlockEnabled = self.Settings.AutoCursorUnlock == true
-		local isSurvivor = self:IsSurvivor()
-		local shouldUnlock = cursorUnlockEnabled
-			and isSurvivor
-			and root ~= nil
-			and root.Visible == true
-			and window.Minimized ~= true
-
-		if shouldUnlock then
-			self:CaptureCursorState()
-			pcall(function()
-				UserInputService.MouseBehavior = Enum.MouseBehavior.Default
-				UserInputService.MouseIconEnabled = true
-			end)
-		elseif cursorUnlockEnabled and isSurvivor then
-			local state = self.CursorState
-			self.CursorState = nil
-			pcall(function()
-				if state then
-					UserInputService.MouseBehavior = state.MouseBehavior
-				end
-				UserInputService.MouseIconEnabled = false
-			end)
-		else
-			self:RestoreCursorState()
-		end
-	end
-
-
-	function InterfaceManager:BindCursorVisibility()
-		if self.CursorConnection then
-			self.CursorConnection:Disconnect()
-			self.CursorConnection = nil
-		end
-		if self.TeamConnection then
-			self.TeamConnection:Disconnect()
-			self.TeamConnection = nil
-		end
-
-		local window = self.Library and self.Library.Window
-		if window and window.Root then
-			self.CursorConnection = window.Root:GetPropertyChangedSignal("Visible"):Connect(function()
-				self:UpdateCursorUnlock()
-			end)
-		end
-		if LocalPlayer then
-			self.TeamConnection = LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
-				self:UpdateCursorUnlock()
-			end)
-		end
-
-		self:UpdateCursorUnlock()
-	end
-
-
-	function InterfaceManager:DisableCursorUnlock()
-		if self.CursorConnection then
-			self.CursorConnection:Disconnect()
-			self.CursorConnection = nil
-		end
-		if self.TeamConnection then
-			self.TeamConnection:Disconnect()
-			self.TeamConnection = nil
-		end
-		self:RestoreCursorState()
-	end
-
-
-
 
 
 	function InterfaceManager:SetTheme(name)
@@ -8879,23 +8805,6 @@ end
 
 
 		})
-
-
-		if game.GameId == 93978595733734 then
-			section:AddToggle("AutoCursorUnlock", {
-				Title = "Auto Cursor Unlock",
-				Description = "Automatically show cursor when UI opens and hide when closed.",
-				Default = Settings.AutoCursorUnlock or false,
-				Callback = function(Value)
-					Settings.AutoCursorUnlock = Value
-					InterfaceManager:SaveSettings()
-					InterfaceManager:UpdateCursorUnlock()
-				end
-			})
-		end
-
-		InterfaceManager:BindCursorVisibility()
-
 
 
 		local MenuKeybind = section:AddKeybind("MenuKeybind", { Title = "Minimize Bind", Default = Library.MinimizeKey.Name or Settings.MenuKeybind, NoDisplay = true })
@@ -9604,7 +9513,6 @@ end
 
 
 function Library:Destroy()
-	InterfaceManager:DisableCursorUnlock()
 
 
 	if Library.Window then
