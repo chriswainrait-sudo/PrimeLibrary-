@@ -2593,16 +2593,27 @@ Components.Element = (function()
 		Element.DescLabel = New("TextLabel", {
 			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
 			Text = Desc or "",
-			TextSize = 10,
+			TextSize = 11,
+			LineHeight = 1.2,
+			TextStrokeTransparency = 1,
 			TextWrapped = true,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			TextYAlignment = Enum.TextYAlignment.Top,
-			AutomaticSize = Enum.AutomaticSize.Y,
-			Size = UDim2.new(1, 0, 0, 12),
+			AutomaticSize = Enum.AutomaticSize.None,
+			Size = UDim2.new(1, 0, 0, 18),
 			BackgroundTransparency = 1,
 			LayoutOrder = 3,
 			ThemeTag = { TextColor3 = "SubText" },
 		})
+		local function ResizeDescription()
+			local size = Element.DescLabel.Size
+			local height = math.max(18, math.ceil(Element.DescLabel.TextBounds.Y) + 4)
+			if size.Y.Offset ~= height then
+				Element.DescLabel.Size = UDim2.new(size.X.Scale, size.X.Offset, 0, height)
+			end
+		end
+		Creator.AddSignal(Element.DescLabel:GetPropertyChangedSignal("TextBounds"), ResizeDescription)
+		task.defer(ResizeDescription)
 
 		Element.LabelHolder = New("Frame", {
 			AutomaticSize = Enum.AutomaticSize.Y,
@@ -4270,7 +4281,9 @@ Components.Window = (function()
 			Size = UDim2.fromOffset(32, 32),
 			Position = UDim2.fromOffset(0, 3),
 			BackgroundTransparency = 0.15,
-			Image = Library:GetIcon("user") or "",
+			Image = LocalPlayer and ("rbxthumb://type=AvatarHeadShot&id=" .. LocalPlayer.UserId .. "&w=150&h=150") or "",
+			ImageColor3 = Color3.new(1, 1, 1),
+			ImageTransparency = 0,
 			ScaleType = Enum.ScaleType.Crop,
 			Parent = Profile,
 			ZIndex = 142,
@@ -4315,15 +4328,15 @@ Components.Window = (function()
 				if Profile.Parent then DisplayName.Text = LocalPlayer.DisplayName end
 			end)
 			task.spawn(function()
-				for attempt = 1, 3 do
+				for attempt = 1, 5 do
 					if not Profile.Parent then return end
-					local ok, image, ready = pcall(Players.GetUserThumbnailAsync, Players, LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
+					if Avatar.IsLoaded then return end
+					local ok, image, ready = pcall(Players.GetUserThumbnailAsync, Players, LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
 					if not Profile.Parent then return end
-					if ok and type(image) == "string" and image ~= "" then
+					if ok and ready and type(image) == "string" and image ~= "" then
 						Avatar.Image = image
-						if ready then return end
 					end
-				if attempt < 3 then task.wait(1) end
+					if attempt < 5 then task.wait(attempt) end
 				end
 			end)
 		end
