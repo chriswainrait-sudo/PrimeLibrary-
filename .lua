@@ -3174,7 +3174,7 @@ Components.Tab = (function()
 					end
 					subtitleText = subtitleText ~= nil and tostring(subtitleText) or ""
 
-					-- Tier is displayed only next to PRIME in the title bar.
+					-- Tier is displayed below the profile name.
 					local normalizedSubtitle = string.lower(subtitleText)
 					if normalizedSubtitle == "freemium" or normalizedSubtitle == "premium" then
 						subtitleText = ""
@@ -4039,21 +4039,12 @@ Components.TitleBar = (function()
 		end
 
 		local TierGradient = New("UIGradient", {
-			Color = isPremiumUser and ColorSequence.new({
-				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 215, 90)),
-				ColorSequenceKeypoint.new(0.35, Color3.fromRGB(190, 145, 40)),
-				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 240, 150)),
-				ColorSequenceKeypoint.new(0.65, Color3.fromRGB(190, 145, 40)),
-				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 215, 90)),
-			}) or ColorSequence.new({
-				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)),
-				ColorSequenceKeypoint.new(0.35, Color3.fromRGB(195, 195, 195)),
-				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 255, 255)),
-				ColorSequenceKeypoint.new(0.65, Color3.fromRGB(195, 195, 195)),
-				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255)),
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 200, 200)),
+				ColorSequenceKeypoint.new(0.5, Color3.new(1, 1, 1)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 200, 200)),
 			}),
 			Offset = Vector2.new(-1, 0),
-			Rotation = 0,
 		})
 
 		local TierLabel = New("TextLabel", {
@@ -4101,19 +4092,22 @@ Components.TitleBar = (function()
 		)
 		shimmer:Play()
 
-		local tierSweepDuration = isPremiumUser and 2.2 or 3.8
-		local tierSweepStyle = isPremiumUser and Enum.EasingStyle.Linear or Enum.EasingStyle.Sine
-		task.spawn(function()
-			while TierGradient and TierGradient.Parent do
-				TierGradient.Offset = Vector2.new(-1, 0)
-				local tween = TweenService:Create(
-					TierGradient,
-					TweenInfo.new(tierSweepDuration, tierSweepStyle, Enum.EasingDirection.InOut),
-					{ Offset = Vector2.new(1, 0) }
-				)
-				tween:Play()
-				tween.Completed:Wait()
+		local tierShimmer = TweenService:Create(TierGradient,
+			TweenInfo.new(3.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+			{Offset = Vector2.new(1, 0)})
+		tierShimmer:Play()
+		Creator.AddSignal(Config.Parent:GetPropertyChangedSignal("Visible"), function()
+			if Config.Parent.Visible then
+				shimmer:Play()
+				tierShimmer:Play()
+			else
+				shimmer:Pause()
+				tierShimmer:Pause()
 			end
+		end)
+		Creator.AddSignal(Config.Parent.Destroying, function()
+			shimmer:Cancel()
+			tierShimmer:Cancel()
 		end)
 
 		TitleBar.Label = PrimeLabel
@@ -4196,8 +4190,8 @@ Components.Window = (function()
 
 		Window.TabFrame = New("Frame", {
 			Name = "TabFrame",
-			Size = UDim2.new(1, -140, 0, 29),
-			Position = UDim2.fromOffset(136, 0),
+			Size = UDim2.new(1, -78, 0, 29),
+			Position = UDim2.fromOffset(74, 0),
 			BackgroundTransparency = 1,
 			Parent = Window.Root,
 			ZIndex = 120,
@@ -4262,36 +4256,20 @@ Components.Window = (function()
 		Window.Footer = Footer
 		local Profile = New("Frame", {
 			Name = "UserProfile",
-			Size = UDim2.new(1, -82, 0, 38),
-			Position = UDim2.fromOffset(10, 5),
+			Size = UDim2.new(1, -104, 0, 38),
+			Position = UDim2.fromOffset(14, 5),
 			BackgroundTransparency = 1,
 			ClipsDescendants = false,
 			Parent = Footer,
 			ZIndex = 141,
 		})
-		local Avatar = New("ViewportFrame", {
-			Name = "Avatar",
-			Ambient = Color3.fromRGB(160, 160, 160),
-			LightColor = Color3.new(1, 1, 1),
-			LightDirection = Vector3.new(-0.3, -0.5, 1),
-			Size = UDim2.fromOffset(36, 36),
-			Position = UDim2.fromOffset(2, 1),
-			BackgroundTransparency = 0.15,
-			Parent = Profile,
-			ZIndex = 142,
-			ThemeTag = {BackgroundColor3 = "Element"},
-		}, {
-			New("UICorner", {CornerRadius = UDim.new(1, 0)}),
-			New("UIStroke", {Thickness = 1, Transparency = 0, ThemeTag = {Color = "ElementBorder"}}),
-		})
 		local DisplayName = New("TextLabel", {
 			Name = "DisplayName",
-			Size = UDim2.new(1, -43, 0, 18),
-			Position = UDim2.fromOffset(42, 2),
+			Size = UDim2.new(1, 0, 0, 19),
+			Position = UDim2.fromOffset(0, 1),
 			BackgroundTransparency = 1,
 			Text = LocalPlayer and LocalPlayer.DisplayName or "Player",
-			Font = Enum.Font.GothamSemibold,
-			TextSize = 12,
+			TextSize = 13,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			TextTruncate = Enum.TextTruncate.AtEnd,
 			RichText = false,
@@ -4299,99 +4277,20 @@ Components.Window = (function()
 			ZIndex = 142,
 			ThemeTag = {TextColor3 = "Text"},
 		})
-		local Username = New("TextLabel", {
-			Name = "Username",
-			Size = UDim2.new(1, -43, 0, 15),
-			Position = UDim2.fromOffset(42, 20),
-			BackgroundTransparency = 1,
-			Text = LocalPlayer and "@" .. LocalPlayer.Name or "",
-			Font = Enum.Font.Gotham,
-			TextSize = 10,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			TextTruncate = Enum.TextTruncate.AtEnd,
-			RichText = false,
-			Parent = Profile,
-			ZIndex = 142,
-			ThemeTag = {TextColor3 = "SubText"},
-		})
+		DisplayName.Font = Enum.Font.GothamMedium
+		local TierLabel = Window.TitleBar.TierLabel
+		TierLabel.Name = "Membership"
+		TierLabel.Parent = Profile
+		TierLabel.Position = UDim2.fromOffset(0, 21)
+		TierLabel.Size = UDim2.new(1, 0, 0, 14)
+		TierLabel.TextSize = 10
+		TierLabel.TextTruncate = Enum.TextTruncate.AtEnd
+		TierLabel.ZIndex = 142
 		Window.UserProfile = Profile
+		Window.TierLabel = TierLabel
 		if LocalPlayer then
 			Creator.AddSignal(LocalPlayer:GetPropertyChangedSignal("DisplayName"), function()
 				if Profile.Parent then DisplayName.Text = LocalPlayer.DisplayName end
-			end)
-			local camera = Instance.new("Camera")
-			camera.FieldOfView = 35
-			camera.Parent = Avatar
-			Avatar.CurrentCamera = camera
-			local generation = 0
-			local portrait
-			local function RefreshAvatar(character)
-				generation += 1
-				local token = generation
-				task.spawn(function()
-					if not character then return end
-					local head = character:FindFirstChild("Head") or character:WaitForChild("Head", 10)
-					if not head or not head:IsA("BasePart") or not Avatar.Parent or token ~= generation then return end
-					local model = Instance.new("WorldModel")
-					local function CopyPart(part)
-						local archivable = part.Archivable
-						part.Archivable = true
-						local ok, copy = pcall(part.Clone, part)
-						part.Archivable = archivable
-						if not ok or not copy then return end
-						for _, item in ipairs(copy:GetDescendants()) do
-							if item:IsA("LuaSourceContainer") or item:IsA("JointInstance") or item:IsA("Constraint") then item:Destroy() end
-						end
-						copy.Anchored = true
-						copy.CanCollide = false
-						copy.LocalTransparencyModifier = 0
-						copy.CFrame = head.CFrame:ToObjectSpace(part.CFrame)
-						copy.Parent = model
-					end
-					CopyPart(head)
-					for _, accessory in ipairs(character:GetChildren()) do
-						if accessory:IsA("Accessory") then
-							local handle = accessory:FindFirstChild("Handle")
-							if handle and handle:IsA("BasePart") then
-								for _, attachment in ipairs(handle:GetChildren()) do
-									if attachment:IsA("Attachment") and head:FindFirstChild(attachment.Name) then
-										CopyPart(handle)
-										break
-									end
-								end
-							end
-						end
-					end
-					local distance = math.max(head.Size.X, head.Size.Y, head.Size.Z) * 1.9
-					camera.CFrame = CFrame.lookAt(Vector3.new(0, 0.15, -distance), Vector3.new(0, 0.15, 0))
-					model.Parent = Avatar
-					if portrait then portrait:Destroy() end
-					portrait = model
-				end)
-			end
-			Creator.AddSignal(LocalPlayer.CharacterAdded, RefreshAvatar)
-			Creator.AddSignal(LocalPlayer.CharacterAppearanceLoaded, RefreshAvatar)
-			RefreshAvatar(LocalPlayer.Character)
-			local photo = New("ImageLabel", {
-				Name = "Headshot",
-				Size = UDim2.fromScale(1, 1),
-				BackgroundColor3 = Color3.new(0, 0, 0),
-				BackgroundTransparency = 0,
-				Image = "rbxthumb://type=AvatarHeadShot&id=" .. LocalPlayer.UserId .. "&w=420&h=420",
-				ImageColor3 = Color3.new(1, 1, 1),
-				ScaleType = Enum.ScaleType.Fit,
-				Visible = false,
-				Parent = Avatar,
-				ZIndex = 143,
-			}, {New("UICorner", {CornerRadius = UDim.new(1, 0)})})
-			local function ShowPhoto()
-				photo.Visible = photo.IsLoaded
-			end
-			Creator.AddSignal(photo:GetPropertyChangedSignal("IsLoaded"), ShowPhoto)
-			ShowPhoto()
-			task.spawn(function()
-				pcall(function() game:GetService("ContentProvider"):PreloadAsync({photo}) end)
-				if photo.Parent then ShowPhoto() end
 			end)
 		end
 
@@ -4408,7 +4307,7 @@ Components.Window = (function()
 
 			local Button = New("TextButton", {
 				Name = name,
-				Size = UDim2.fromOffset(24, 20),
+				Size = UDim2.fromOffset(28, 28),
 				Position = UDim2.new(1, xOffset, 0.5, 0),
 				AnchorPoint = Vector2.new(1, 0.5),
 				BackgroundTransparency = 1,
@@ -4422,12 +4321,15 @@ Components.Window = (function()
 				IconLabel,
 			})
 
+			local outline = New("UIStroke", {Thickness = 1, Transparency = 0.65, Color = Color3.new(1, 1, 1), ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Parent = Button})
 			local hoverInfo = TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 			Creator.AddSignal(Button.MouseEnter, function()
+				TweenService:Create(outline, hoverInfo, {Transparency = 0}):Play()
 				TweenService:Create(Button, hoverInfo, { BackgroundTransparency = 0.7 }):Play()
 				TweenService:Create(IconLabel, hoverInfo, { Size = UDim2.fromOffset(14, 14) }):Play()
 			end)
 			Creator.AddSignal(Button.MouseLeave, function()
+				TweenService:Create(outline, hoverInfo, {Transparency = 0.65}):Play()
 				TweenService:Create(Button, hoverInfo, { BackgroundTransparency = 1 }):Play()
 				TweenService:Create(IconLabel, hoverInfo, { Size = UDim2.fromOffset(13, 13) }):Play()
 			end)
@@ -4441,8 +4343,8 @@ Components.Window = (function()
 			return Button
 		end
 
-		Window.MinButton = FooterButton("HideButton", "minus", -30, function() Window:Minimize() end)
-		Window.CloseButton = FooterButton("CloseButton", "x", -5, function()
+		Window.MinButton = FooterButton("HideButton", "minus", -46, function() Window:Minimize() end)
+		Window.CloseButton = FooterButton("CloseButton", "x", -12, function()
 			Window:Dialog({
 				Title = "Close",
 				Content = "Unload PRIME interface?",
