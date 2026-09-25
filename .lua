@@ -1528,51 +1528,55 @@ function Creator.GetThemeProperty(Property)
 	return Creator.Themes.Slate[Property]
 end
 
+local function ApplyThemeObject(object, properties)
+    for property, colorIndex in pairs(properties) do
+        local value = Creator.GetThemeProperty(colorIndex)
+        if value ~= nil then object[property] = value end
+    end
+end
+
 function Creator.UpdateTheme()
-	if not Creator.Themes[Creator.Theme] then
-		Creator.Theme = "Slate"
-	end
-
-	for Instance, Object in next, Creator.Registry do
-		for Property, ColorIdx in next, Object.Properties do
-			local themeValue = Creator.GetThemeProperty(ColorIdx)
-			if themeValue then
-				Instance[Property] = themeValue
-			end
-		end
-	end
-
-	local transparency = Creator.GetThemeProperty("ElementTransparency")
-	if transparency then
-		for _, Motor in next, Creator.TransparencyMotors do
-			Motor:setGoal(Flipper.Instant.new(transparency))
-		end
-	end
+    if not Creator.Themes[Creator.Theme] then Creator.Theme = "Slate" end
+    for object, data in pairs(Creator.Registry) do
+        local ok, err = pcall(ApplyThemeObject, object, data.Properties)
+        if not ok then
+            Creator.Registry[object] = nil
+            if data.Connection then data.Connection:Disconnect() end
+            warn("[Library/Theme] Removed unavailable object: " .. tostring(err))
+        end
+    end
+    local transparency = Creator.GetThemeProperty("ElementTransparency")
+    if transparency ~= nil then
+        for _, motor in pairs(Creator.TransparencyMotors) do
+            motor:setGoal(Flipper.Instant.new(transparency))
+        end
+    end
 end
 
-function Creator.AddThemeObject(Object, Properties)
-	local Idx = #Creator.Registry + 1
-	local Data = {
-		Object = Object,
-		Properties = Properties,
-		Idx = Idx,
-	}
-
-	Creator.Registry[Object] = Data
-	Creator.UpdateTheme()
-	return Object
+function Creator.AddThemeObject(object, properties)
+    local data = Creator.Registry[object]
+    if not data then
+        data = {Object = object, Properties = properties}
+        Creator.Registry[object] = data
+        data.Connection = Creator.AddSignal(object.Destroying, function()
+            Creator.Registry[object] = nil
+        end)
+    else
+        data.Properties = properties
+    end
+    ApplyThemeObject(object, properties)
+    return object
 end
 
-function Creator.OverrideTag(Object, Properties)
-	Creator.Registry[Object].Properties = Properties
-	Creator.UpdateTheme()
+function Creator.OverrideTag(object, properties)
+    return Creator.AddThemeObject(object, properties)
 end
 
-function Creator.GetThemeProperty(Property)
-	if Themes[Library.Theme][Property] then
-		return Themes[Library.Theme][Property]
-	end
-	return Themes["Dark"][Property]
+function Creator.GetThemeProperty(property)
+    local theme = Themes[Library.Theme] or Themes.Slate
+    local value = theme[property]
+    if value ~= nil then return value end
+    return Themes.Slate[property]
 end
 
 local MiniMessageColors = {
@@ -2062,7 +2066,11 @@ end)
 
 enforceFont(GUI)
 
-pcall(function() GUI.Parent = game:GetService("CoreGui") end)
+local guiPlayer = Players.LocalPlayer
+assert(guiPlayer, "[Library] LocalPlayer unavailable")
+local guiParent = guiPlayer:WaitForChild("PlayerGui", 15)
+assert(guiParent, "[Library] PlayerGui unavailable")
+GUI.Parent = guiParent
 
 local KeybindDisplayContainer = Instance.new("Frame")
 KeybindDisplayContainer.Name = "UIFrame"
@@ -4065,8 +4073,9 @@ Components.TitleBar = (function()
 		elseif explicitTier == "freemium" then
 			isPremiumUser = false
 		else
-			local globalTier = type(_G.PRIME_TIER) == "string" and _G.PRIME_TIER:lower() or nil
-			isPremiumUser = globalTier == "premium"
+			local tierEnv = getgenv and getgenv() or _G
+			local globalTier = tostring(tierEnv.PRIME_TIER or _G.PRIME_TIER or "Freemium"):lower()
+			isPremiumUser = globalTier == "premium" or globalTier == "preemium"
 		end
 
 		local TierGradient = New("UIGradient", {
