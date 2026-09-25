@@ -10,7 +10,11 @@ local Camera = Workspace.CurrentCamera
 local Mouse = (LocalPlayer and LocalPlayer.GetMouse and LocalPlayer:GetMouse()) or nil
 local httpService = game:GetService("HttpService")
 
-local Mobile = not RunService:IsStudio() and table.find({Enum.Platform.IOS, Enum.Platform.Android}, UserInputService:GetPlatform()) ~= nil
+local Mobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+pcall(function()
+    local platform = UserInputService:GetPlatform()
+    Mobile = platform == Enum.Platform.IOS or platform == Enum.Platform.Android or Mobile
+end)
 
 local function enforceFont(root)
 	if not root then return end
@@ -8769,6 +8773,71 @@ end
 end
 
 
+local function makeLogo(parent, size)
+    local function New(class, props)
+        local object = Instance.new(class)
+        for key, value in pairs(props) do object[key] = value end
+        return object
+    end
+    local PrimeLabel = New("Frame", {
+        Name = "PrimeLogo",
+        Size = UDim2.fromOffset(size, size),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        Parent = parent,
+    })
+		local function Polygon(points, top, bottom, layer)
+			for row = 0, 95 do
+				local y = (row + 0.5) / 96
+				local hits = {}
+				for i, point in ipairs(points) do
+					local nextPoint = points[i % #points + 1]
+					if (point[2] <= y and nextPoint[2] > y) or (nextPoint[2] <= y and point[2] > y) then
+						hits[#hits + 1] = point[1] + (y - point[2]) * (nextPoint[1] - point[1]) / (nextPoint[2] - point[2])
+					end
+				end
+				table.sort(hits)
+				for i = 1, #hits - 1, 2 do
+					New("Frame", {
+						Name = "Facet",
+						Position = UDim2.fromScale(hits[i], row / 96),
+						Size = UDim2.fromScale(hits[i + 1] - hits[i], 1 / 96),
+						BorderSizePixel = 0,
+						BackgroundColor3 = top:Lerp(bottom, y),
+						Parent = PrimeLabel,
+						ZIndex = layer,
+					})
+				end
+			end
+		end
+		local white = Color3.fromRGB(255, 255, 255)
+		local silver = Color3.fromRGB(180, 180, 180)
+		local dark = Color3.fromRGB(70, 70, 70)
+		for i = 0, 79 do
+			local angle = math.rad(i * 4.5 - 90)
+			local nextAngle = angle + math.rad(4.8)
+			local x, y = 0.5 + math.cos(angle) * 0.455, 0.5 + math.sin(angle) * 0.455
+			local nx, ny = 0.5 + math.cos(nextAngle) * 0.455, 0.5 + math.sin(nextAngle) * 0.455
+			New("Frame", {
+				Name = "Ring",
+				AnchorPoint = Vector2.new(0.5, 0.5),
+				Position = UDim2.fromScale((x + nx) / 2, (y + ny) / 2),
+				Size = UDim2.fromScale(math.sqrt((nx - x)^2 + (ny - y)^2) + 0.006, 0.025),
+				Rotation = math.deg(angle) + 92.4,
+				BackgroundColor3 = white:Lerp(silver, (y + 1) / 2),
+				BorderSizePixel = 0,
+				Parent = PrimeLabel,
+			})
+		end
+		Polygon({{0.21,0.25},{0.34,0.23},{0.44,0.18},{0.51,0.12},{0.46,0.23},{0.445,0.34},{0.445,0.56},{0.36,0.66},{0.36,0.34},{0.34,0.29}}, white, silver, 2)
+		Polygon({{0.21,0.25},{0.31,0.29},{0.34,0.34},{0.34,0.65},{0.30,0.73},{0.24,0.80},{0.29,0.68},{0.29,0.35},{0.27,0.29}}, silver, white, 3)
+		Polygon({{0.36,0.28},{0.46,0.23},{0.445,0.34},{0.445,0.56},{0.38,0.63},{0.38,0.31}}, dark, white, 4)
+		Polygon({{0.24,0.80},{0.45,0.59},{0.68,0.46},{0.54,0.63},{0.40,0.69}}, white, silver, 3)
+		Polygon({{0.24,0.80},{0.40,0.71},{0.52,0.69},{0.70,0.69},{0.84,0.60},{0.72,0.78},{0.69,0.88},{0.64,0.81},{0.47,0.77},{0.35,0.77}}, white, silver, 4)
+		Polygon({{0.24,0.80},{0.35,0.77},{0.47,0.77},{0.64,0.81},{0.69,0.88},{0.67,0.77},{0.51,0.73},{0.38,0.74}}, dark, white, 5)
+
+    return PrimeLabel
+end
 Library.CreateWindow = function(self, Config)
 
 	Config = Config or {}
@@ -8899,550 +8968,59 @@ Library.CreateWindow = function(self, Config)
 	InterfaceManager:SetTheme("Slate")
 	Library:SetTheme("Slate")
     
+    self.ShowLogoOnPC = Config.ShowLogoOnPC == true
+    if Mobile or self.ShowLogoOnPC then self:CreateMinimizer() end
     return Window
 end
 
 
-function Library:CreateMinimizer(Config)
-
-
-	Config = Config or {}
-
-
-	if self.Minimizer and self.Minimizer.Parent then
-
-
-		return self.Minimizer
-
-
-	end
-
-
-
-
-
-	local parentGui = Library.GUI or GUI
-
-
-	if parentGui then parentGui.DisplayOrder = 1000 end
-
-
-	local isMobile = Mobile and true or false
-
-
-
-
-
-	local iconAsset = isMobile and Library:GetIcon("crown") or "rbxassetid://10734897102"
-
-
-	if type(Config.Icon) == "string" and Config.Icon ~= "" then
-
-
-		pcall(function()
-
-
-			local resolved = Library:GetIcon(Config.Icon)
-
-
-			if resolved then
-
-
-				iconAsset = resolved
-
-
-			elseif string.match(Config.Icon, "^rbxassetid://%d+$") then
-
-
-				iconAsset = Config.Icon
-
-
-			end
-
-
-		end)
-
-
-	end
-
-
-
-
-
-	local useAcrylic = (Config.Acrylic == true)
-
-
-
-
-
-	local cornerRadius = tonumber(Config.Corner)
-
-
-	local backgroundTransparency = (typeof(Config.Transparency) == "number") and math.clamp(Config.Transparency, 0, 1) or 0
-
-
-	local draggableWhole = (Config.Draggable == true)
-
-
-
-
-	local holder
-
-
-	local function createButton(isDesktop)
-		if not isDesktop then
-			return New("TextButton", {
-				Name = "MinimizeButton",
-				Size = UDim2.new(1, 0, 1, 0),
-				BorderSizePixel = 0,
-				BackgroundColor3 = Color3.fromRGB(24, 24, 27),
-				BackgroundTransparency = 0,
-				AutoButtonColor = true,
-				Text = "",
-			}, {
-				New("UICorner", { CornerRadius = UDim.new(0, cornerRadius or 10) }),
-				New("UIGradient", {
-					Color = ColorSequence.new({
-						ColorSequenceKeypoint.new(0, Color3.fromRGB(62, 62, 68)),
-						ColorSequenceKeypoint.new(1, Color3.fromRGB(12, 12, 14)),
-					}),
-					Rotation = 90,
-				}),
-				New("UIStroke", {
-					Name = "MonochromeGlow",
-					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-					Color = Color3.fromRGB(185, 185, 192),
-					Transparency = 0.35,
-					Thickness = 4,
-				}),
-				New("UIStroke", {
-					Name = "Border",
-					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-					Color = Color3.fromRGB(255, 255, 255),
-					Transparency = 0.2,
-					Thickness = 1,
-				}),
-				New("ImageLabel", {
-					Name = "Icon",
-					Size = UDim2.fromScale(0.7, 0.7),
-					Position = UDim2.fromScale(0.5, 0.5),
-					AnchorPoint = Vector2.new(0.5, 0.5),
-					BackgroundTransparency = 1,
-					Image = iconAsset,
-					ImageColor3 = Color3.fromRGB(255, 255, 255),
-				}),
-			})
-		end
-
-
-		return New("TextButton", {
-
-			Name = "MinimizeButton",
-
-
-			Size = UDim2.new(1, 0, 1, 0),
-
-
-			BorderSizePixel = 0,
-
-
-			BackgroundTransparency = backgroundTransparency or 0,
-
-
-			AutoButtonColor = true,
-
-
-			ThemeTag = {
-
-
-				BackgroundColor3 = "Element",
-
-			},
-
-
-		}, {
-
-
-			New("UICorner", { CornerRadius = UDim.new(0, cornerRadius or (isDesktop and 14 or 12)) }),
-
-
-			New("UIStroke", {
-
-
-				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-
-
-				Transparency = isDesktop and 0.6 or 0.7,
-
-
-				Thickness = isDesktop and 2 or 1.5,
-
-
-				ThemeTag = {
-
-
-					Color = "ElementBorder",
-
-
-				},
-
-
-			}),
-
-
-			New("ImageLabel", {
-
-
-				Name = "Icon",
-
-
-				Image = iconAsset,
-
-
-				Size = UDim2.new(0.8, 0, 0.8, 0),
-
-				Position = UDim2.new(0.5, 0, 0.5, 0),
-
-
-				AnchorPoint = Vector2.new(0.5, 0.5),
-
-
-				BackgroundTransparency = 1,
-
-
-				ThemeTag = {
-
-
-					ImageColor3 = "Text",
-
-
-				},
-
-
-			}, {
-
-
-				New("UIAspectRatioConstraint", { AspectRatio = 1, AspectType = Enum.AspectType.FitWithinMaxSize }),
-
-
-				New("UICorner", { CornerRadius = UDim.new(0, 0) })
-
-
-			}),
-
-
-
-
-
-		})
-
-
-	end
-
-
-
-
-
-	if isMobile then
-
-
-		holder = New("Frame", {
-
-
-			Name = "UIButton",
-
-
-			Parent = parentGui,
-
-
-			Size = Config.Size or UDim2.fromOffset(36, 36),
-
-			Position = Config.Position or UDim2.new(0.45, 0, 0.025, 0),
-
-
-			BackgroundTransparency = 1,
-
-
-			ZIndex = 999999999,
-
-
-			Visible = (Config.Visible ~= false),
-
-
-		})
-
-
-	else
-
-
-		holder = New("Frame", {
-
-
-			Name = "UIButton",
-
-
-			Parent = parentGui,
-
-
-			Size = Config.Size or UDim2.fromOffset(36, 36),
-			Position = Config.Position or UDim2.new(0, 300, 0, 20),
-
-
-			BackgroundTransparency = 1,
-
-
-			ZIndex = 999999999,
-
-
-			Visible = (Config.Visible ~= false),
-
-
-		})
-
-
-	end
-
-
-
-	if useAcrylic and not isMobile then
-
-		local miniAcrylic = Acrylic.AcrylicPaint()
-
-		miniAcrylic.Frame.Parent = holder
-
-
-		miniAcrylic.Frame.Size = UDim2.fromScale(1, 1)
-
-
-		pcall(function() miniAcrylic.AddParent(holder) end)
-
-
-
-
-
-		local desiredCorner = UDim.new(0, cornerRadius or 0)
-
-
-		pcall(function()
-
-
-			for _, descendant in ipairs(miniAcrylic.Frame:GetDescendants()) do
-
-
-				if descendant.ClassName == "UICorner" then
-
-
-					descendant.CornerRadius = desiredCorner
-				elseif descendant.ClassName == "ImageLabel" then
-
-
-					descendant.Size = UDim2.fromScale(1, 1)
-
-
-					descendant.Position = UDim2.new(0.5, 0, 0.5, 0)
-
-
-					descendant.AnchorPoint = Vector2.new(0.5, 0.5)
-
-
-				end
-
-
-			end
-
-
-		end)
-
-
-		self.MinimizerAcrylic = miniAcrylic
-
-
-	end
-
-
-
-
-
-	local btnInstance = createButton(not isMobile)
-
-
-	btnInstance.Parent = holder
-
-
-	btnInstance.ZIndex = (holder.ZIndex or 0) + 1
-
-
-
-
-
-	local button = holder:FindFirstChildOfClass("TextButton")
-
-
-	if button then
-
-
-		local isDragging = false
-
-
-		local dragStart, dragOffset
-
-
-
-
-
-		if draggableWhole then
-
-
-			Creator.AddSignal(button.InputBegan, function(Input)
-
-
-				if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
-
-
-					isDragging = true
-
-
-					local pos = Input.Position
-
-
-					dragStart = Vector2.new(pos.X, pos.Y)
-
-
-					dragOffset = holder.Position
-
-
-					local conn
-
-
-					conn = Input.Changed:Connect(function()
-
-
-						if Input.UserInputState == Enum.UserInputState.End then
-
-
-							isDragging = false
-
-
-							dragStart = nil
-
-
-							dragOffset = nil
-
-
-							conn:Disconnect()
-
-
-						end
-
-
-					end)
-
-
-				end
-
-
-			end)
-
-
-
-
-
-			Creator.AddSignal(RunService.Heartbeat, function()
-
-
-				if isDragging and dragStart and dragOffset and holder and holder.Parent then
-
-
-					local mouse = LocalPlayer:GetMouse()
-
-
-					local current = Vector2.new(mouse.X, mouse.Y)
-
-
-					local delta = current - dragStart
-
-
-					local newX = dragOffset.X.Offset + delta.X
-
-
-					local newY = dragOffset.Y.Offset + delta.Y
-
-
-					local viewport = workspace.Camera.ViewportSize
-
-
-					local size = holder.AbsoluteSize
-
-
-					if newX < 0 then newX = 0 end
-
-
-					if newY < 0 then newY = 0 end
-
-
-					if newX > viewport.X - size.X then newX = viewport.X - size.X end
-
-
-					if newY > viewport.Y - size.Y then newY = viewport.Y - size.Y end
-
-
-					holder.Position = UDim2.new(0, newX, 0, newY)
-
-
-				end
-
-
-			end)
-
-
-		end
-
-
-
-
-
-		AddSignal(button.MouseButton1Click, function()
-
-
-			task.wait(0.1)
-
-
-			if not isDragging and Library.Window then
-
-
-				Library.Window:Minimize()
-
-
-			end
-
-
-		end)
-
-
-	end
-
-
-
-
-
-
-
-
-
-
-
-	self.Minimizer = holder
-
-
-	return holder
-
-
+function Library:CreateMinimizer()
+    if self.Minimizer and self.Minimizer.Parent then return self.Minimizer end
+    local window = self.Window
+    if not window or not (Mobile or self.ShowLogoOnPC) then return nil end
+    local holder = New("Frame", {Name = "RestoreLogo", Size = UDim2.fromOffset(48,48), Position = UDim2.new(0.5,-24,0.5,-24), BackgroundTransparency = 1, BorderSizePixel = 0, Visible = not window.Root.Visible, Parent = self.GUI, ZIndex = 500})
+    makeLogo(holder,48)
+    local hit = New("TextButton", {Size = UDim2.fromScale(1,1), BackgroundTransparency = 1, Text = "", AutoButtonColor = false, Active = true, Parent = holder, ZIndex = 510})
+    local active, start, origin, moved
+    Creator.AddSignal(hit.InputBegan,function(input)
+        if active then return end
+        if input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+        active, start, origin, moved = input, input.Position, holder.AbsolutePosition, false
+    end)
+    Creator.AddSignal(UserInputService.InputChanged,function(input)
+        if not active then return end
+        if active.UserInputType == Enum.UserInputType.Touch then
+            if input ~= active then return end
+        elseif input.UserInputType ~= Enum.UserInputType.MouseMovement then return end
+        local delta = input.Position - start
+        if delta.Magnitude >= 8 then moved = true end
+        if moved then
+            local camera = Workspace.CurrentCamera
+            if not camera then return end
+            local size = camera.ViewportSize
+            holder.Position = UDim2.fromOffset(math.clamp(origin.X+delta.X,6,math.max(6,size.X-54)),math.clamp(origin.Y+delta.Y,6,math.max(6,size.Y-90)))
+        end
+    end)
+    Creator.AddSignal(UserInputService.InputEnded,function(input)
+        if not active then return end
+        if active.UserInputType == Enum.UserInputType.Touch then
+            if input ~= active then return end
+        elseif input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+        active = nil
+        if not moved and not window.Root.Visible then window:Minimize() end
+    end)
+    Creator.AddSignal(window.Root:GetPropertyChangedSignal("Visible"),function()
+        holder.Visible = not window.Root.Visible
+        active = nil
+    end)
+    Creator.AddSignal(window.Root.Destroying,function()
+        active = nil
+        holder:Destroy()
+        if self.Minimizer == holder then self.Minimizer = nil end
+    end)
+    self.Minimizer = holder
+    return holder
 end
-
-
-
-
-
 function Library:SetTheme(Value)
 	Library.Theme = "Slate"
 	Creator.Theme = "Slate"
