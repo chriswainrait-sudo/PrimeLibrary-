@@ -20,7 +20,7 @@ local function enforceFont(root)
 	if not root then return end
 	for _, obj in ipairs(root:GetDescendants()) do
 		if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
-			pcall(function() obj.Font = Enum.Font.Gotham; obj.FontFace = nil end)
+			pcall(function() obj.Font = Enum.Font.GothamMedium end)
 		end
 	end
 end
@@ -741,30 +741,30 @@ local Themes = {
 	Slate = {
 		Name = "Slate",
 		Accent = Color3.fromRGB(255, 255, 255),
-		AcrylicMain = Color3.fromRGB(0, 0, 0),
-		AcrylicBorder = Color3.fromRGB(255, 255, 255),
+		AcrylicMain = Color3.fromRGB(12, 13, 16),
+		AcrylicBorder = Color3.fromRGB(92, 96, 105),
 		AcrylicGradient = ColorSequence.new(Color3.new(0, 0, 0)),
 		AcrylicNoise = 1,
 		TitleBarLine = Color3.fromRGB(255, 255, 255),
 		Tab = Color3.fromRGB(0, 0, 0),
-		Element = Color3.fromRGB(0, 0, 0),
-		ElementBorder = Color3.fromRGB(255, 255, 255),
-		InElementBorder = Color3.fromRGB(255, 255, 255),
-		ElementTransparency = 1,
+		Element = Color3.fromRGB(29, 31, 37),
+		ElementBorder = Color3.fromRGB(70, 74, 84),
+		InElementBorder = Color3.fromRGB(88, 92, 102),
+		ElementTransparency = 0.35,
 		ToggleSlider = Color3.fromRGB(0, 0, 0),
 		ToggleToggled = Color3.fromRGB(255, 255, 255),
 		SliderRail = Color3.fromRGB(255, 255, 255),
-		DropdownFrame = Color3.fromRGB(0, 0, 0),
-		DropdownHolder = Color3.fromRGB(0, 0, 0),
-		DropdownBorder = Color3.fromRGB(255, 255, 255),
+		DropdownFrame = Color3.fromRGB(34, 37, 44),
+		DropdownHolder = Color3.fromRGB(17, 19, 24),
+		DropdownBorder = Color3.fromRGB(70, 74, 84),
 		DropdownOption = Color3.fromRGB(0, 0, 0),
 		Keybind = Color3.fromRGB(0, 0, 0),
-		Input = Color3.fromRGB(0, 0, 0),
+		Input = Color3.fromRGB(34, 37, 44),
 		InputFocused = Color3.fromRGB(0, 0, 0),
 		InputIndicator = Color3.fromRGB(255, 255, 255),
 		InputIndicatorFocus = Color3.fromRGB(255, 255, 255),
-		Dialog = Color3.fromRGB(0, 0, 0),
-		DialogHolder = Color3.fromRGB(0, 0, 0),
+		Dialog = Color3.fromRGB(17, 19, 24),
+		DialogHolder = Color3.fromRGB(21, 23, 29),
 		DialogHolderLine = Color3.fromRGB(255, 255, 255),
 		DialogButton = Color3.fromRGB(0, 0, 0),
 		DialogButtonBorder = Color3.fromRGB(255, 255, 255),
@@ -772,8 +772,8 @@ local Themes = {
 		DialogInput = Color3.fromRGB(0, 0, 0),
 		DialogInputLine = Color3.fromRGB(255, 255, 255),
 		Text = Color3.fromRGB(255, 255, 255),
-		SubText = Color3.fromRGB(255, 255, 255),
-		Hover = Color3.fromRGB(0, 0, 0),
+		SubText = Color3.fromRGB(173, 179, 191),
+		Hover = Color3.fromRGB(52, 56, 66),
 		HoverChange = 0.06,
 	},
 	Gray = {
@@ -1457,7 +1457,7 @@ local Creator = {
 		TextLabel = {
 			BackgroundColor3 = Color3.new(1, 1, 1),
 			BorderColor3 = Color3.new(0, 0, 0),
-			Font = Enum.Font.Gotham,
+			Font = Enum.Font.GothamMedium,
 			Text = "",
 			TextColor3 = Color3.new(0, 0, 0),
 			BackgroundTransparency = 1,
@@ -1467,7 +1467,7 @@ local Creator = {
 			BackgroundColor3 = Color3.new(1, 1, 1),
 			BorderColor3 = Color3.new(0, 0, 0),
 			AutoButtonColor = false,
-			Font = Enum.Font.Gotham,
+			Font = Enum.Font.GothamMedium,
 			Text = "",
 			TextColor3 = Color3.new(0, 0, 0),
 			TextSize = 14,
@@ -1476,7 +1476,7 @@ local Creator = {
 			BackgroundColor3 = Color3.new(1, 1, 1),
 			BorderColor3 = Color3.new(0, 0, 0),
 			ClearTextOnFocus = false,
-			Font = Enum.Font.Gotham,
+			Font = Enum.Font.GothamMedium,
 			Text = "",
 			TextColor3 = Color3.new(0, 0, 0),
 			TextSize = 14,
@@ -2044,8 +2044,7 @@ Creator.New = function(Name, Properties, Children)
 	local Object = oldCreatorNew(Name, Properties, Children)
 	if Object and (Object:IsA("TextLabel") or Object:IsA("TextButton") or Object:IsA("TextBox")) then
 		pcall(function()
-			Object.Font = Enum.Font.Gotham
-			Object.FontFace = nil
+			Object.Font = Enum.Font.GothamMedium
 		end)
 	end
 	return Object
@@ -2064,7 +2063,7 @@ Library.GUI = GUI
 -- Enforce preferred font on existing and newly added text instances now that `Creator` and `GUI` exist
 Creator.AddSignal(GUI.DescendantAdded, function(obj)
 	if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
-		pcall(function() obj.Font = Enum.Font.Gotham; obj.FontFace = nil end)
+		pcall(function() obj.Font = Enum.Font.GothamMedium end)
 	end
 end)
 
@@ -2107,7 +2106,7 @@ function Library:AddKeybindDisplay(idx, title, key, isToggled)
 	label.Name = "KBD_" .. idx
 	label.BackgroundTransparency = 1
 	label.Size = UDim2.new(1, 0, 0, 18)
-	label.Font = Enum.Font.GothamBold
+	label.Font = Enum.Font.GothamMedium
 	label.TextSize = 13
 	label.TextColor3 = Color3.fromRGB(255, 255, 255)
 	label.TextXAlignment = Enum.TextXAlignment.Right
@@ -2554,7 +2553,7 @@ Components.Element = (function()
 		Options = Options or {}
 
 		Element.TitleLabel = New("TextLabel", {
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 			Text = Title or "",
 			TextSize = 12,
 			TextXAlignment = Enum.TextXAlignment.Left,
@@ -2596,7 +2595,7 @@ Components.Element = (function()
 		Element.TitleLabel.Parent = Element.Header
 
 		Element.DescLabel = New("TextLabel", {
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 			Text = Desc or "",
 			TextSize = 11,
 			LineHeight = 1.2,
@@ -2715,223 +2714,6 @@ Components.Element = (function()
 		return Element
 	end
 end)()
-Components.Section = (function()
-	local New = Creator.New
-
-	return function(Title, Parent, Icon)
-		local Section = { Collapsed = false }
-		local resolvedIcon = Icon
-
-		if Icon and Library:GetIcon(Icon) then
-			resolvedIcon = Library:GetIcon(Icon)
-		end
-
-		Section.Layout = New("UIListLayout", {
-			Padding = UDim.new(0, 2),
-			SortOrder = Enum.SortOrder.LayoutOrder,
-		})
-
-		Section.Container = New("Frame", {
-			Name = "Container",
-			Size = UDim2.new(1, 0, 0, 8),
-			Position = UDim2.fromOffset(0, 29),
-			BackgroundTransparency = 1,
-		}, {
-			Section.Layout,
-			New("UIPadding", {
-				PaddingLeft = UDim.new(0, 5),
-				PaddingRight = UDim.new(0, 5),
-				PaddingTop = UDim.new(0, 4),
-				PaddingBottom = UDim.new(0, 6),
-			}),
-		})
-
-		local Chevron = New("ImageLabel", {
-			Name = "Chevron",
-			Image = Library:GetIcon("chevron-right") or "rbxassetid://10709791437",
-			Size = UDim2.fromOffset(14, 14),
-			AnchorPoint = Vector2.new(1, 0.5),
-			Position = UDim2.new(1, -8, 0.5, 0),
-			BackgroundTransparency = 1,
-			ImageTransparency = 0.08,
-			Rotation = 90,
-			ThemeTag = { ImageColor3 = "Text" },
-		})
-
-		local HeaderLabel = New("TextLabel", {
-			Name = "SectionTitle",
-			RichText = true,
-			Text = Title or "",
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
-			TextSize = 12,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			TextYAlignment = Enum.TextYAlignment.Center,
-			Position = UDim2.fromOffset(resolvedIcon and 26 or 8, 0),
-			Size = UDim2.new(1, resolvedIcon and -55 or -37, 1, 0),
-			BackgroundTransparency = 1,
-			ThemeTag = { TextColor3 = "Text" },
-		})
-
-		Section.HeaderButton = New("TextButton", {
-			Name = "SectionHeader",
-			Size = UDim2.new(1, 0, 0, 29),
-			BackgroundTransparency = 0.34,
-			Text = "",
-			AutoButtonColor = false,
-			ThemeTag = { BackgroundColor3 = "Element" },
-		}, {
-			New("Frame", {
-				Size = UDim2.new(1, -12, 0, 1),
-				Position = UDim2.new(0, 6, 1, -1),
-				BorderSizePixel = 0,
-				BackgroundTransparency = 0.28,
-				ThemeTag = { BackgroundColor3 = "TitleBarLine" },
-			}),
-			resolvedIcon and New("ImageLabel", {
-				Image = resolvedIcon,
-				Size = UDim2.fromOffset(13, 13),
-				Position = UDim2.new(0, 8, 0.5, 0),
-				AnchorPoint = Vector2.new(0, 0.5),
-				BackgroundTransparency = 1,
-				ThemeTag = { ImageColor3 = "SubText" },
-			}) or nil,
-			HeaderLabel,
-			Chevron,
-		})
-
-		Section.Root = New("Frame", {
-			Name = "Section",
-			BackgroundTransparency = 0.08,
-			Size = UDim2.new(1, 0, 0, 38),
-			LayoutOrder = 7,
-			Parent = Parent,
-			ClipsDescendants = true,
-			ThemeTag = { BackgroundColor3 = "DialogHolder" },
-		}, {
-			New("UICorner", { CornerRadius = UDim.new(0, 6) }),
-			New("UIStroke", {
-				Thickness = 1,
-				Transparency = 0.18,
-				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-				ThemeTag = { Color = "ElementBorder" },
-			}),
-			Section.HeaderButton,
-			Section.Container,
-		})
-
-		local activeTween = nil
-		local animationSerial = 0
-		local transitionInfo = TweenInfo.new(0.18, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-		local lastContentHeight = 8
-
-		local function ContentHeight()
-			local measured = Section.Layout.AbsoluteContentSize.Y
-			if measured > 0 then
-				lastContentHeight = math.max(8, measured + 10)
-			end
-			return lastContentHeight
-		end
-
-		local function ApplyState(Animated)
-			animationSerial = animationSerial + 1
-			local serial = animationSerial
-
-			if activeTween then
-				activeTween:Cancel()
-				activeTween = nil
-			end
-
-			-- Every section uses the same true hide/show behavior.
-			-- While collapsed, nested Toggle/Slider/Button/Dropdown/etc. objects
-			-- are not only clipped by the root; the content container is hidden.
-			-- The last measured content height is cached so reopening remains reliable.
-			if not Section.Collapsed then
-				Section.Container.Visible = true
-			end
-
-			local contentHeight = ContentHeight()
-			Section.Container.Size = UDim2.new(1, 0, 0, contentHeight)
-			local targetHeight = Section.Collapsed and 29 or (29 + contentHeight)
-			local targetRotation = Section.Collapsed and 0 or 90
-
-			local function FinishState()
-				if serial ~= animationSerial then return end
-				if Section.Collapsed then
-					Section.Container.Visible = false
-				else
-					Section.Container.Visible = true
-					local finalContentHeight = ContentHeight()
-					Section.Container.Size = UDim2.new(1, 0, 0, finalContentHeight)
-					Section.Root.Size = UDim2.new(1, 0, 0, 29 + finalContentHeight)
-				end
-			end
-
-			if Animated then
-				local rootTween = TweenService:Create(Section.Root, transitionInfo, {
-					Size = UDim2.new(1, 0, 0, targetHeight),
-				})
-				activeTween = rootTween
-				TweenService:Create(Chevron, transitionInfo, { Rotation = targetRotation }):Play()
-				rootTween:Play()
-
-				task.spawn(function()
-					rootTween.Completed:Wait()
-					if activeTween == rootTween then
-						activeTween = nil
-					end
-					FinishState()
-				end)
-			else
-				Section.Root.Size = UDim2.new(1, 0, 0, targetHeight)
-				Chevron.Rotation = targetRotation
-				FinishState()
-			end
-		end
-
-		function Section:SetCollapsed(Value, Animated)
-			local nextState = not not Value
-			if nextState == Section.Collapsed then return end
-			Section.Collapsed = nextState
-			ApplyState(Animated ~= false)
-		end
-
-		function Section:Toggle()
-			Section:SetCollapsed(not Section.Collapsed, true)
-		end
-
-		Creator.AddSignal(Section.Layout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
-			ContentHeight()
-			if not Section.Collapsed and not activeTween then
-				task.defer(function() ApplyState(false) end)
-			end
-		end)
-
-		-- Activated works consistently for mouse, touch and gamepad.
-		Creator.AddSignal(Section.HeaderButton.Activated, function()
-			Section:Toggle()
-		end)
-
-		Creator.AddSignal(Section.HeaderButton.MouseEnter, function()
-			TweenService:Create(Section.HeaderButton, TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { BackgroundTransparency = 0.16 }):Play()
-			TweenService:Create(Chevron, TweenInfo.new(0.14), { ImageTransparency = 0 }):Play()
-		end)
-		Creator.AddSignal(Section.HeaderButton.MouseLeave, function()
-			TweenService:Create(Section.HeaderButton, TweenInfo.new(0.14, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { BackgroundTransparency = 0.34 }):Play()
-			TweenService:Create(Chevron, TweenInfo.new(0.14), { ImageTransparency = 0.08 }):Play()
-		end)
-
-		task.defer(function() ApplyState(false) end)
-
-		if Library.LanguageManager then
-			Library.LanguageManager:RegisterElement(HeaderLabel, Title)
-		end
-		if Library.Window and Library.Window.RegisterElement then
-			Library.Window.RegisterElement(Section.Root, Title, "Section")
-		end
-
-		return Section
-	end
-end)()
 Components.Tab = (function()
 	local New = Creator.New
 	local TabModule = {
@@ -2963,13 +2745,14 @@ Components.Tab = (function()
 		local RightLayout = New("UIListLayout", { Padding = UDim.new(0, 5), SortOrder = Enum.SortOrder.LayoutOrder })
 		local Left = New("Frame", {
 			Name = "LeftColumn",
-			Size = UDim2.new(0.5, -4, 0, 0),
+			Size = UDim2.new(1, 0, 0, 0),
 			AutomaticSize = Enum.AutomaticSize.Y,
 			BackgroundTransparency = 1,
 			Parent = Content,
 		}, { LeftLayout })
 		local Right = New("Frame", {
 			Name = "RightColumn",
+            Visible = false,
 			Size = UDim2.new(0.5, -4, 0, 0),
 			Position = UDim2.new(0.5, 4, 0, 0),
 			AutomaticSize = Enum.AutomaticSize.Y,
@@ -3017,48 +2800,22 @@ Components.Tab = (function()
 		}
 	end
 
-	local function AttachSectionOwner(owner, SectionFrame)
-		table.insert(owner.Sections, SectionFrame.Root)
-
-		-- Keep each section in a fixed column. The previous balancing algorithm
-		-- re-parented sections every time their animated height changed, making
-		-- expansion look like the card jumped around. Settings appeared correct
-		-- only because it normally had a single section.
-		local sectionIndex = #owner.Sections
-		SectionFrame.Root.Parent = (sectionIndex % 2 == 1) and owner.Left or owner.Right
-
-		local updatePending = false
-		local function UpdateLayout()
-			if updatePending then
-				return
-			end
-
-			updatePending = true
-			task.defer(function()
-				updatePending = false
-				owner.UpdateCanvas()
-			end)
-		end
-
-		Creator.AddSignal(SectionFrame.Root:GetPropertyChangedSignal("Size"), UpdateLayout)
-		UpdateLayout()
-	end
-
-	local function AddSectionToOwner(owner, SectionTitle, SectionIcon)
-		local Section = { Type = "Section" }
-		local SectionFrame = Components.Section(SectionTitle, owner.Left, SectionIcon)
-		Section.Container = SectionFrame.Container
-		Section.ScrollFrame = owner.Scroll
-		Section.Root = SectionFrame.Root
-		Section.SetCollapsed = function(_, value, animated) SectionFrame:SetCollapsed(value, animated) end
-		Section.Toggle = function() SectionFrame:Toggle() end
-		Section.Collapse = function(_, animated) SectionFrame:SetCollapsed(true, animated) end
-		Section.Expand = function(_, animated) SectionFrame:SetCollapsed(false, animated) end
-		Section.IsCollapsed = function() return SectionFrame.Collapsed end
-		AttachSectionOwner(owner, SectionFrame)
-		setmetatable(Section, Library.Elements)
-		return Section
-	end
+    local function AddSectionToOwner(owner)
+        local Section = {
+            Type = "Section",
+            Container = owner.Left,
+            ScrollFrame = owner.Scroll,
+            Root = owner.Left,
+        }
+        local function keepOpen() return Section end
+        Section.SetCollapsed = keepOpen
+        Section.Toggle = keepOpen
+        Section.Collapse = keepOpen
+        Section.Expand = keepOpen
+        Section.IsCollapsed = function() return false end
+        setmetatable(Section, Library.Elements)
+        return Section
+    end
 
 	function TabModule:GetCurrentTabPos()
 		return 0
@@ -3071,11 +2828,11 @@ Components.Tab = (function()
 		local resolvedIcon = Icon
 		if Icon and Library:GetIcon(Icon) then resolvedIcon = Library:GetIcon(Icon) end
 
-		local textWidth = TextService:GetTextSize(tostring(Title), 12, Enum.Font.GothamBold, Vector2.new(500, 20)).X
+		local textWidth = TextService:GetTextSize(tostring(Title), 12, Enum.Font.GothamMedium, Vector2.new(500, 20)).X
 		local width = math.max(58, textWidth + (resolvedIcon and 32 or 22))
 		local TextLabel = New("TextLabel", {
 			Text = Title,
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 			TextSize = 12,
 			TextXAlignment = Enum.TextXAlignment.Center,
 			BackgroundTransparency = 1,
@@ -3294,7 +3051,7 @@ Components.Tab = (function()
 				})
 				self.Owner.Scroll.Visible = false
 			end
-			local subWidth = math.max(56, TextService:GetTextSize(tostring(SubTitle), 11, Enum.Font.Gotham, Vector2.new(500, 20)).X + 18)
+			local subWidth = math.max(56, TextService:GetTextSize(tostring(SubTitle), 11, Enum.Font.GothamMedium, Vector2.new(500, 20)).X + 18)
 			local SubButton = New("TextButton", {
 				Size = UDim2.fromOffset(subWidth, 24),
 				BackgroundTransparency = 0.75,
@@ -3411,7 +3168,7 @@ Components.Button = (function()
 		local Button = {}
 
 		Button.Title = New("TextLabel", {
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 			TextColor3 = Color3.fromRGB(200, 200, 200),
 			TextSize = 14,
 			TextWrapped = true,
@@ -3541,11 +3298,7 @@ Components.Dialog = (function()
 		})
 
 		NewDialog.Title = New("TextLabel", {
-			FontFace = Font.new(
-				"rbxasset://fonts/families/GothamSSm.json",
-				Enum.FontWeight.SemiBold,
-				Enum.FontStyle.Normal
-			),
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 			Text = "Dialog",
 			TextColor3 = Color3.fromRGB(240, 240, 240),
 			TextSize = 22,
@@ -3688,7 +3441,7 @@ Components.Notification = (function()
 			RichText = true,
 			TextColor3 = Color3.fromRGB(255, 255, 255),
 			TextTransparency = 0,
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 			TextSize = 13,
 			TextXAlignment = "Left",
 			TextYAlignment = "Center",
@@ -3701,7 +3454,7 @@ Components.Notification = (function()
 		})
 
 		NewNotification.ContentLabel = New("TextLabel", {
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 			Text = Config.Content,
 			TextColor3 = Color3.fromRGB(240, 240, 240),
 			TextSize = 14,
@@ -3717,7 +3470,7 @@ Components.Notification = (function()
 		})
 
 		NewNotification.SubContentLabel = New("TextLabel", {
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 			Text = Config.SubContent,
 			TextColor3 = Color3.fromRGB(240, 240, 240),
 			TextSize = 14,
@@ -3894,7 +3647,7 @@ Components.Textbox = (function()
 		local Textbox = {}
 
 		Textbox.Input = New("TextBox", {
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 			TextColor3 = Color3.fromRGB(200, 200, 200),
 			TextSize = 11,
 			TextXAlignment = Enum.TextXAlignment.Left,
@@ -4004,19 +3757,19 @@ Components.Textbox = (function()
 		return Textbox
 	end
 end)()
-Components.TitleBar = (function()
-	local New = Creator.New
-	return function(Config)
-		local TitleBar = {}
-
-		local PrimeLabel = New("Frame", {
-			Name = "BrandLogo",
-			Position = UDim2.fromOffset(8, 3),
-			Size = UDim2.fromOffset(23, 23),
-			ClipsDescendants = true,
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-		})
+local function makeLogo(parent, size)
+    local function New(class, props)
+        local object = Instance.new(class)
+        for key, value in pairs(props) do object[key] = value end
+        return object
+    end
+    local PrimeLabel = New("Frame", {
+        Name = "PrimeLogo",
+        Size = UDim2.fromOffset(size, size),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        Parent = parent,
+    })
 		local function Polygon(points, top, bottom, layer)
 			for row = 0, 95 do
 				local y = (row + 0.5) / 96
@@ -4067,6 +3820,19 @@ Components.TitleBar = (function()
 		Polygon({{0.24,0.80},{0.40,0.71},{0.52,0.69},{0.70,0.69},{0.84,0.60},{0.72,0.78},{0.69,0.88},{0.64,0.81},{0.47,0.77},{0.35,0.77}}, white, silver, 4)
 		Polygon({{0.24,0.80},{0.35,0.77},{0.47,0.77},{0.64,0.81},{0.69,0.88},{0.67,0.77},{0.51,0.73},{0.38,0.74}}, dark, white, 5)
 
+    return PrimeLabel
+end
+
+Components.TitleBar = (function()
+	local New = Creator.New
+	return function(Config)
+		local TitleBar = {}
+
+        local PrimeLabel = makeLogo(nil, 23)
+        PrimeLabel.Name = "BrandLogo"
+        PrimeLabel.Position = UDim2.fromOffset(9, 3)
+        PrimeLabel.ClipsDescendants = true
+
 		local explicitTier = type(Config.Tier) == "string" and Config.Tier:lower() or nil
 		local isPremiumUser
 
@@ -4094,11 +3860,7 @@ Components.TitleBar = (function()
 		local TierLabel = New("TextLabel", {
 			Name = "PrimeSubtitle",
 			Text = isPremiumUser and "Premium" or "Freemium",
-			FontFace = Font.new(
-				"rbxasset://fonts/families/Montserrat.json",
-				isPremiumUser and Enum.FontWeight.Bold or Enum.FontWeight.Medium,
-				Enum.FontStyle.Normal
-			),
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 			TextSize = 15,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			TextYAlignment = Enum.TextYAlignment.Center,
@@ -4168,7 +3930,9 @@ Components.Window = (function()
 		Library.Window = Window
 
 		Window.AcrylicPaint = Acrylic.AcrylicPaint({ CornerRadius = MAIN_GUI_CORNER_RADIUS, SuppressSquareBlur = true })
-		ApplyMainGuiCornerRadius(Window.AcrylicPaint)
+        ApplyMainGuiCornerRadius(Window.AcrylicPaint)
+        Window.AcrylicPaint.Frame.Visible = false
+        Window.BackgroundTransparency = math.clamp(tonumber(Config.BackgroundTransparency) or 0.18, 0, 0.65)
 
 		local rootChildren = {}
 		if Config.BackgroundImage then
@@ -4200,9 +3964,9 @@ Components.Window = (function()
 			Position = Window.Position,
 			Parent = Config.Parent,
 			ZIndex = 100,
-			ClipsDescendants = true,
-			BackgroundTransparency = 0,
-			ThemeTag = { BackgroundColor3 = "AcrylicMain" },
+            ClipsDescendants = true,
+            BackgroundTransparency = Window.BackgroundTransparency,
+            ThemeTag = { BackgroundColor3 = "AcrylicMain" },
 		}, rootChildren)
 
 		Window.TitleBar = Components.TitleBar({
@@ -4528,7 +4292,7 @@ Components.Window = (function()
 			local Dialog = DialogModule:Create()
 			Dialog.Title.Text = DialogConfig.Title or "PRIME"
 			local Content = New("TextLabel", {
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
+				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 				Text = DialogConfig.Content or "",
 				TextSize = 12,
 				TextXAlignment = Enum.TextXAlignment.Left,
@@ -4848,7 +4612,7 @@ ElementsTable.Dropdown = (function()
 		local container = self.Container
 
 		local DropdownDisplay = New("TextLabel", {
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 			Text = "",
 			TextColor3 = Color3.fromRGB(240, 240, 240),
 			TextSize = 11,
@@ -4941,7 +4705,7 @@ ElementsTable.Dropdown = (function()
 				New("UICorner", { CornerRadius = UDim.new(0, 4) }),
 			})
 			SearchBox = New("TextBox", {
-				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
+				FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 				TextColor3 = Color3.fromRGB(200, 200, 200),
 				TextSize = 13,
 				TextXAlignment = Enum.TextXAlignment.Left,
@@ -5460,7 +5224,7 @@ local DropdownHolderCanvas = New("Frame", {
 				})
 
 				local ButtonLabel = New("TextLabel", {
-					FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json"),
+					FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 					Text = Value,
 					TextColor3 = Color3.fromRGB(200, 200, 200),
 					TextSize = 13,
@@ -5848,7 +5612,7 @@ ElementsTable.Keybind = (function()
 		Keybind.Elements = KeybindFrame
 
 		local KeybindDisplayLabel = New("TextLabel", {
-			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+			FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 			Text = Config.Default,
 			TextColor3 = Color3.fromRGB(240, 240, 240),
 			TextSize = 11,
@@ -6115,11 +5879,7 @@ ElementsTable.Colorpicker = (function()
 
 			local function CreateInputLabel(Text, Pos)
 				return New("TextLabel", {
-					FontFace = Font.new(
-						"rbxasset://fonts/families/GothamSSm.json",
-						Enum.FontWeight.Medium,
-						Enum.FontStyle.Normal
-					),
+					FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
 					Text = Text,
 					TextColor3 = Color3.fromRGB(240, 240, 240),
 					TextSize = 13,
@@ -7486,7 +7246,6 @@ local function ResolveElementHost(self)
 
 	-- Most scripts create a section and then keep calling Tab:AddToggle,
 	-- Tab:AddSlider, Tab:AddDropdown, etc. Put those controls inside the last
-	-- section so collapsing the section hides every nested control.
 	if (host.Type == "Tab" or host.Type == "SubTab") and host.CurrentSection then
 		host = host.CurrentSection
 	end
@@ -8773,71 +8532,6 @@ end
 end
 
 
-local function makeLogo(parent, size)
-    local function New(class, props)
-        local object = Instance.new(class)
-        for key, value in pairs(props) do object[key] = value end
-        return object
-    end
-    local PrimeLabel = New("Frame", {
-        Name = "PrimeLogo",
-        Size = UDim2.fromOffset(size, size),
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        Parent = parent,
-    })
-		local function Polygon(points, top, bottom, layer)
-			for row = 0, 95 do
-				local y = (row + 0.5) / 96
-				local hits = {}
-				for i, point in ipairs(points) do
-					local nextPoint = points[i % #points + 1]
-					if (point[2] <= y and nextPoint[2] > y) or (nextPoint[2] <= y and point[2] > y) then
-						hits[#hits + 1] = point[1] + (y - point[2]) * (nextPoint[1] - point[1]) / (nextPoint[2] - point[2])
-					end
-				end
-				table.sort(hits)
-				for i = 1, #hits - 1, 2 do
-					New("Frame", {
-						Name = "Facet",
-						Position = UDim2.fromScale(hits[i], row / 96),
-						Size = UDim2.fromScale(hits[i + 1] - hits[i], 1 / 96),
-						BorderSizePixel = 0,
-						BackgroundColor3 = top:Lerp(bottom, y),
-						Parent = PrimeLabel,
-						ZIndex = layer,
-					})
-				end
-			end
-		end
-		local white = Color3.fromRGB(255, 255, 255)
-		local silver = Color3.fromRGB(180, 180, 180)
-		local dark = Color3.fromRGB(70, 70, 70)
-		for i = 0, 79 do
-			local angle = math.rad(i * 4.5 - 90)
-			local nextAngle = angle + math.rad(4.8)
-			local x, y = 0.5 + math.cos(angle) * 0.455, 0.5 + math.sin(angle) * 0.455
-			local nx, ny = 0.5 + math.cos(nextAngle) * 0.455, 0.5 + math.sin(nextAngle) * 0.455
-			New("Frame", {
-				Name = "Ring",
-				AnchorPoint = Vector2.new(0.5, 0.5),
-				Position = UDim2.fromScale((x + nx) / 2, (y + ny) / 2),
-				Size = UDim2.fromScale(math.sqrt((nx - x)^2 + (ny - y)^2) + 0.006, 0.025),
-				Rotation = math.deg(angle) + 92.4,
-				BackgroundColor3 = white:Lerp(silver, (y + 1) / 2),
-				BorderSizePixel = 0,
-				Parent = PrimeLabel,
-			})
-		end
-		Polygon({{0.21,0.25},{0.34,0.23},{0.44,0.18},{0.51,0.12},{0.46,0.23},{0.445,0.34},{0.445,0.56},{0.36,0.66},{0.36,0.34},{0.34,0.29}}, white, silver, 2)
-		Polygon({{0.21,0.25},{0.31,0.29},{0.34,0.34},{0.34,0.65},{0.30,0.73},{0.24,0.80},{0.29,0.68},{0.29,0.35},{0.27,0.29}}, silver, white, 3)
-		Polygon({{0.36,0.28},{0.46,0.23},{0.445,0.34},{0.445,0.56},{0.38,0.63},{0.38,0.31}}, dark, white, 4)
-		Polygon({{0.24,0.80},{0.45,0.59},{0.68,0.46},{0.54,0.63},{0.40,0.69}}, white, silver, 3)
-		Polygon({{0.24,0.80},{0.40,0.71},{0.52,0.69},{0.70,0.69},{0.84,0.60},{0.72,0.78},{0.69,0.88},{0.64,0.81},{0.47,0.77},{0.35,0.77}}, white, silver, 4)
-		Polygon({{0.24,0.80},{0.35,0.77},{0.47,0.77},{0.64,0.81},{0.69,0.88},{0.67,0.77},{0.51,0.73},{0.38,0.74}}, dark, white, 5)
-
-    return PrimeLabel
-end
 Library.CreateWindow = function(self, Config)
 
 	Config = Config or {}
@@ -8867,7 +8561,7 @@ Library.CreateWindow = function(self, Config)
 	Library.Theme = "Slate"
 
 	if Config.BackgroundTransparency == nil then
-		Config.BackgroundTransparency = 0.05
+		Config.BackgroundTransparency = 0.18
 	end
 
 
@@ -9094,125 +8788,22 @@ end
 
 
 function Library:ToggleTransparency(Value)
-	Library.Transparency = Value == true
-	if Library.Window and Library.Window.Root then
-		Library.Window.Root.BackgroundTransparency = 0
-	end
-	pcall(function()
-		if Library.Window and Library.Window.AcrylicPaint and Library.Window.AcrylicPaint.Frame and Library.Window.AcrylicPaint.Frame:FindFirstChild("Background") then
-			Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = 0
-		end
-	end)
+    Library.Transparency = Value == true
+    local window = Library.Window
+    if window and window.Root then
+        window.Root.BackgroundTransparency = Library.Transparency and (window.BackgroundTransparency or 0.18) or 0
+    end
 end
 
 
 function Library:SetWindowTransparency(Value)
-
-
-	if Library.Window and Library.UseAcrylic then
-
-
-		Value = math.clamp(Value, 0, 3)
-
-
-
-
-
-		if Library.Theme == "Glass" then
-
-
-			local glassTransparency = 0.8 + (Value * 0.05)
-
-
-			if Value > 1 then
-
-
-				glassTransparency = 0.85 + ((Value - 1) * 0.04)
-
-
-			end
-
-
-			if Value > 2 then
-
-
-				glassTransparency = 0.93 + ((Value - 2) * 0.04)
-
-
-			end
-
-
-			Library.Window.AcrylicPaint:SetModelTransparency(math.min(glassTransparency, 0.99))
-
-
-
-
-
-			local backgroundTransparency = 0.7 + (Value * 0.08)
-
-
-			if Value > 1 then
-
-
-				backgroundTransparency = 0.78 + ((Value - 1) * 0.07)
-
-
-			end
-
-
-			if Value > 2 then
-
-
-				backgroundTransparency = 0.85 + ((Value - 2) * 0.1)
-
-
-			end
-
-
-			Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = 0
-
-
-
-
-
-			Library.NotificationTransparency = Value
-
-
-
-
-
-			for _, notification in pairs(Library.ActiveNotifications or {}) do
-
-
-				if notification and notification.ApplyTransparency then
-
-
-					notification:ApplyTransparency()
-
-
-				end
-
-
-			end
-
-
-		else
-
-
-			Library.Window.AcrylicPaint:SetModelTransparency(0.98)
-
-
-			Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = 0
-		end
-
-
-	end
-
-
+    local window = Library.Window
+    if not window then return end
+    local value = tonumber(Value)
+    if not value then return end
+    window.BackgroundTransparency = math.clamp(value / 3, 0, 1) * 0.5 + 0.08
+    if window.Root then window.Root.BackgroundTransparency = window.BackgroundTransparency end
 end
-
-
-
 
 
 function Library:Notify(Config)
